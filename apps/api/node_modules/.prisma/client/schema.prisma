@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(uuid())
+  name          String
+  email         String     @unique
+  password_hash String
+  role          Role
+  provider      Provider?
+  bookings      Booking[]
+  activities    Activity[]
+  created_at    DateTime   @default(now())
+}
+
+model Provider {
+  id           String    @id @default(uuid())
+  user_id      String    @unique
+  user         User      @relation(fields: [user_id], references: [id])
+  company_name String
+  contact_info String
+  adspaces     AdSpace[]
+}
+
+model AdSpace {
+  id            String    @id @default(uuid())
+  provider_id   String
+  provider      Provider  @relation(fields: [provider_id], references: [id])
+  title         String
+  location      String
+  latitude      Float?
+  longitude     Float?
+  type          String
+  price_per_day Float
+  is_available  Boolean   @default(true)
+  bookings      Booking[]
+  created_at    DateTime  @default(now())
+}
+
+model Booking {
+  id         String        @id @default(uuid())
+  user_id    String
+  adspace_id String
+  user       User          @relation(fields: [user_id], references: [id])
+  adspace    AdSpace       @relation(fields: [adspace_id], references: [id])
+  start_date DateTime
+  end_date   DateTime
+  status     BookingStatus @default(PENDING)
+  created_at DateTime      @default(now())
+}
+
+model Activity {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  type       String
+  message    String
+  metadata   Json?
+  created_at DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  ADVERTISER
+  PROVIDER
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
