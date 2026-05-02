@@ -1,0 +1,9 @@
+{
+  "name": "@postad/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for POSTAD platform",
+  "main": "index.ts",
+  "types": "index.ts",
+  "private": true,
+  "license": "MIT"
+}
